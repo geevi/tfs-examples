@@ -8,7 +8,7 @@ import json
 
 class ImageNet(object):
 
-    def make_input_tensor(self, path, name):
+    def input_tensor(self, path, name):
 
         paths = []
         labels  = []
@@ -29,7 +29,7 @@ class ImageNet(object):
             paths = tf.convert_to_tensor(paths, dtype=tf.string)
             labels = tf.convert_to_tensor(labels, dtype=tf.int32)
 
-            q = tf.train.slice_input_producer([paths, labels], shuffle=True)
+            q = tf.train.slice_input_producer([paths, labels], shuffle=True, capacity= 2*FLAGS.B)
             images = tf.image.decode_jpeg(tf.read_file(q[0]), channels=3)
             labels = q[1]
             images = tf.image.resize_images(images, [224, 224], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
@@ -44,6 +44,6 @@ class ImageNet(object):
             return { 'images' : images, 'labels' : tf.one_hot(labels, 1000) }
 
     def __init__(self, train_path, val_path, class_names):
-        self.train  = self.make_input_tensor(train_path, "train_input")
-        self.val    = self.make_input_tensor(val_path, "val_input")
+        self.train  = self.input_tensor(train_path, "train_input")
+        self.val    = self.input_tensor(val_path, "val_input")
         self.class_names =  json.load(open(class_names))

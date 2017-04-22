@@ -80,21 +80,9 @@ class AModelWithDropout(BaseModel):
             'y_pred_val'    : self.logits_val,
             'rate'          : FLAGS.rate
         }
-        self.optimizer, train_summary, val_summary, self.global_step = classify(**args)
-        self.train_summary_op   = tf.summary.merge(train_summary)
-        self.val_summary_op    = tf.summary.merge(val_summary)
-
-        model_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-        for i in model_vars:
-            tf.summary.histogram(i.op.name, i)
-        self.summary_op =  tf.summary.merge_all()
-
-    def train(self, sess):
-        return sess.run([self.optimizer, self.train_summary_op, self.global_step], feed_dict = {self.is_training: True, self.drop_pr: 0.6})[1:]
-
-    def validate(self, sess):
-        return sess.run(self.summary_op, feed_dict = {self.is_training: False, self.drop_pr: 1.0})
-
+        self.optimizer, self.train_summary_op, self.val_summary_op, self.global_step = classify(**args)
+        self.train_feed = {self.is_training: True, self.drop_pr: 0.6}
+        self.val_feed = {self.is_training: False, self.drop_pr: 1.0}
 
 
 
@@ -184,21 +172,12 @@ class VGG16(BaseModel):
             'y_pred_val'   : self.logits_val,
             'rate'          : FLAGS.rate
         }
-        self.optimizer, train_summary, val_summary, self.global_step = classify(**args)
-        self.train_summary_op   = tf.summary.merge(train_summary)
-        self.val_summary_op    = tf.summary.merge(val_summary)
-
-        model_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-        for i in model_vars:
-            tf.summary.histogram(i.op.name, i)
-        self.summary_op =  tf.summary.merge_all()
+        self.optimizer, self.train_summary_op, self.val_summary_op, self.global_step = classify(**args)
+        
+        self.train_feed = {self.is_training: True}
+        self.val_feed = {self.is_training: False}
 
 
 
-    def train(self, sess):
-        return sess.run([self.optimizer, self.train_summary_op, self.global_step], feed_dict = {self.is_training: True})[1:]
-
-    def validate(self, sess):
-        return sess.run(self.summary_op, feed_dict = {self.is_training: False})
 
 
