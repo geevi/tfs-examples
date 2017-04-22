@@ -6,7 +6,7 @@ import models
 flags.DEFINE_string('train_path', '/datasets/ImageNet2012ResizedTo256/train/', "Imagenet train folder")
 flags.DEFINE_string('val_path', '/datasets/ImageNet2012ResizedTo256/val/', "Imagenet val folder")
 flags.DEFINE_string('class_names', 'classes.json', "Human readable names of classes.")
-flags.DEFINE_string('arc', 'VGG16', "Human readable names of classes.")
+flags.DEFINE_string('arc', 'VGG16', "Model class name.")
 
 
 def main(_):
@@ -21,15 +21,8 @@ def main(_):
 
     ctrl = init_tf(coord = True, saver = True, writer = True)
 
-
-
     training_loop(ctrl, model, test=True)
     
-
-
-
-
-
 
 if __name__ == "__main__":
     tf.app.run()
